@@ -17,7 +17,7 @@ RHO = 45
 PATCH_SIZE = 128
 
 # Synthetic data directories
-DATA_PATH = "/home/tynguyen/pose_estimation/data/synthetic/" + str(RHO) + '/'
+DATA_PATH = "/data/UnsupervisedDeepHomography_SyntheticData/" + str(RHO) + '/'
 
 if not os.path.exists(DATA_PATH):
   os.makedirs(DATA_PATH)

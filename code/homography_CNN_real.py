@@ -23,7 +23,7 @@ FULL_HEIGHT = 240 #
 FULL_WIDTH =  320
 
 # Data directories
-DATA_PATH = "/home/tynguyen/pose_estimation/data/real/" + str(RHO) + '/'
+DATA_PATH = "/data/UnsupervisedDeepHomography_RealData/" + str(RHO) + '/'
 if not os.path.exists(DATA_PATH):
   os.makedirs(DATA_PATH)
 
@@ -42,16 +42,16 @@ TEST_FILENAMES_FILE = os.path.join(DATA_PATH,'test_real.txt')
 TEST_GROUND_TRUTH_FILE = os.path.join(DATA_PATH,'test_gt.txt')
 
 # Log and model directories
-MAIN_LOG_PATH = '/media/tynguyen/DATA/'
-LOG_DIR       = MAIN_LOG_PATH + "docker_folder/pose_estimation/logs/"
+MAIN_LOG_PATH = '../'
+LOG_DIR       = MAIN_LOG_PATH + "logs/"
 
 # Where to load model
-LOAD_MODEL_DIR = MAIN_LOG_PATH + "docker_folder/pose_estimation/models/"
+LOAD_MODEL_DIR = MAIN_LOG_PATH + "models/real_models/"
 # Where to save new model
-SAVE_MODEL_DIR = MAIN_LOG_PATH + "docker_folder/pose_estimation/models/real_models/"
+SAVE_MODEL_DIR = MAIN_LOG_PATH + "models/real_models/"
 
 # Where to save visualization images (for report)
-RESULTS_DIR   = MAIN_LOG_PATH + "docker_folder/pose_estimation/results/synthetic/report/"
+RESULTS_DIR   = MAIN_LOG_PATH + "results/real/report/"
 
 # list of augmentations to the data
 AUGMENT_LIST = ['normalize']

@@ -199,11 +199,11 @@ def main():
   PATCH_SIZE = 128
 
   # Directories to files
-  RAW_DATA_PATH = "/Earthbyte/tynguyen/rawdata/train/" # Real images used for generating synthetic data
-  TEST_RAW_DATA_PATH = "/Earthbyte/tynguyen/rawdata/test/" # Real images used for generating test synthetic data
+  RAW_DATA_PATH = "/data/UnsupervisedDeepHomography_Dataset/train/" # Real images used for generating synthetic data
+  TEST_RAW_DATA_PATH = "/data/UnsupervisedDeepHomography_Dataset/test/" # Real images used for generating test synthetic data
 
   # Synthetic data directories
-  DATA_PATH = "/Earthbyte/tynguyen/docker_folder/pose_estimation/data/synthetic/" + str(RHO) + '/'
+  DATA_PATH = "/data/UnsupervisedDeepHomography_SyntheticData/" + str(RHO) + '/'
   if not os.path.exists(DATA_PATH):
     os.makedirs(DATA_PATH)
 
