@@ -41,7 +41,8 @@ extended_dataloader_params = namedtuple('extended_parameters',
 def string_length_tf(t):
     """Wrap python functions to tensor function.
     This function returns len of a string"""
-    return tf.py_func(len, [t], [tf.int64])
+    # return tf.py_func(len, [t], [tf.int64])
+    return tf.py_func(lambda p: [len(x) for x in p], [t], [tf.int64])
 
 
 
@@ -58,6 +59,7 @@ def read_img_and_gt(filenames_file, pts1_file, gt_file, params):
     img_array = img_f.readlines()
   img_array = [x.strip() for  x in img_array]
   img_array = [x.split() for x in img_array] # Use x.split()[0] if assuming image left and right have same name
+  # img_array = [x.split()[0] for x in img_array] # Use x.split()[0] if assuming image left and right have same name
 
   # In case there is not ground truth
   if not gt_file:
@@ -140,6 +142,11 @@ class Dataloader(object):
 
     # Read images file by file
     #if self.mode == 'test':
+
+    # print("11111111")
+    # print(self.data_path)
+    # print(split_line[1])
+    # print("22222222")
     I_path = tf.string_join([self.data_path,'I/', split_line[1]])
     I_prime_path = tf.string_join([self.data_path,'I_prime/', split_line[1]])
 
@@ -153,6 +160,12 @@ class Dataloader(object):
       self.full_img_w = self.img_w
       pass
     # Just obtain images with full_img_h x full_img_w, and check later if the size is identical
+    # print("-----------------")
+    # print(I_path)
+    # print(I_prime_path)
+    # print(self.full_img_h)
+    # print(self.full_img_w)
+    # print("-----------------")
     full_I = self.read_image(I_path, [self.full_img_h, self.full_img_w], channels=3)
     full_I_prime = self.read_image(I_prime_path, [self.full_img_h, self.full_img_w], channels=3)
 
@@ -228,18 +241,30 @@ class Dataloader(object):
 
     # If ground truth of homography is given (in synthetic case - both training and testing, in aerial image case - only test)
     if self.gt_file:
-      self.full_I_batch, self.full_I_prime_batch, self.I1_batch, self.I2_batch, self.I1_aug_batch, self.I2_aug_batch, self.I_batch, self.I_prime_batch, self.pts1_batch, self.gt_batch, self.patch_indices_batch = tf.train.shuffle_batch([full_I_aug, full_I_prime_aug, I1, I2, I1_aug, I2_aug, I_aug, I_prime_aug, pts1_batch, gt_batch, patch_indices_tf], self.params.batch_size,
-                         self.params.batch_size*10, self.params.batch_size*4, 20) # number of threads = 20
+      self.full_I_batch, self.full_I_prime_batch, self.I1_batch, self.I2_batch, self.I1_aug_batch, self.I2_aug_batch, self.I_batch, self.I_prime_batch, self.pts1_batch, self.gt_batch, self.patch_indices_batch= tf.train.shuffle_batch([full_I_aug, full_I_prime_aug, I1, I2, I1_aug, I2_aug, I_aug, I_prime_aug, pts1_batch, gt_batch, patch_indices_tf], self.params.batch_size, 
+              self.params.batch_size*10, self.params.batch_size*4, 20) # number of threads = 20
+              #batch_size / capacity / min_after_dequeue /
 
     else:
       self.full_I_batch, self.full_I_prime_batch, self.I1_batch, self.I2_batch, self.I1_aug_batch, self.I2_aug_batch, self.I_batch, self.I_prime_batch, self.pts1_batch, self.patch_indices_batch = tf.train.shuffle_batch([full_I_aug, full_I_prime_aug,I1, I2, I1_aug, I2_aug, I_aug, I_prime_aug, pts1_batch, patch_indices_tf], self.params.batch_size, self.params.batch_size*10, self.params.batch_size*4, 20) # number of threads = 20
 
 
   def read_image(self, image_path, out_size, channels=3):
-
+    print("---image_path---")
+    print(image_path)
+    # print(image_path[0])
+    # print(image_path[1])
+    # print(image_path[2])
     path_length = string_length_tf(image_path)[0]
+    # path_length = tf.convert_to_tensor(10,dtype=tf.int64)
+    # path_length = tf.constant(52, dtype=tf.int64)
+    print("debug:)")
     file_extension = tf.substr(image_path, path_length-3, 3)
+    print("debug:):)")
     file_cond = tf.equal(file_extension, 'jpg')
+    print("-------------")
+    print(file_cond)
+    print("-------------")
 
     image = tf.cond(file_cond, lambda: tf.image.decode_jpeg(tf.read_file(image_path), channels=channels), lambda: tf.image.decode_png(tf.read_file(image_path), channels=channels))
     image = tf.cast(image, tf.float32)

@@ -65,13 +65,19 @@ class HomographyModel(object):
                   [0., 0., 1.]]).astype(np.float32)
 
     M_tensor  = tf.constant(M, tf.float32)
-    self.M_tile   = tf.tile(tf.expand_dims(M_tensor, [0]), [self.params.batch_size, 1,1])
+    #bkjung
+    # self.M_tile   = tf.tile(tf.expand_dims(M_tensor, [0]), [self.params.batch_size, 1,1])
+    self.M_tile   = tf.tile(tf.expand_dims(M_tensor, [0]), [8, 1,1])
     # Inverse of M
     M_inv = np.linalg.inv(M)
     M_tensor_inv = tf.constant(M_inv, tf.float32)
-    self.M_tile_inv   = tf.tile(tf.expand_dims(M_tensor_inv, [0]), [self.params.batch_size,1,1])
+    #bkjung
+    # self.M_tile_inv   = tf.tile(tf.expand_dims(M_tensor_inv, [0]), [self.params.batch_size,1,1])
+    self.M_tile_inv   = tf.tile(tf.expand_dims(M_tensor_inv, [0]), [8,1,1])
 
-    y_t = tf.range(0, self.params.batch_size*self.params.img_w*self.params.img_h, self.params.img_w*self.params.img_h)
+    #bkjung
+    # y_t = tf.range(0, self.params.batch_size*self.params.img_w*self.params.img_h, self.params.img_w*self.params.img_h)
+    y_t = tf.range(0, 8*self.params.img_w*self.params.img_h, self.params.img_w*self.params.img_h)
     z =  tf.tile(tf.expand_dims(y_t,[1]),[1,self.params.patch_size*self.params.patch_size])
     self.batch_indices_tensor = tf.reshape(z, [-1]) # Add these value to patch_indices_batch[i] for i in range(num_pairs) # [BATCH_SIZE*WIDTH*HEIGHT]
 
@@ -167,8 +173,9 @@ class HomographyModel(object):
 
 
   def solve_DLT(self):
-
-    batch_size = self.params.batch_size
+    #bkjung
+    #batch_size = self.params.batch_size
+    batch_size = 8
     pts_1_tile = self.pts_1_tile
     # Solve for H using DLT
     pred_h4p_tile = tf.expand_dims(self.pred_h4p, [2]) # BATCH_SIZE x 8 x 1
@@ -266,7 +273,9 @@ class HomographyModel(object):
     pixel_indices =  patch_indices_flat + self.batch_indices_tensor
     pred_I2_flat = tf.gather(warped_images_flat, pixel_indices)
 
-    self.pred_I2 = tf.reshape(pred_I2_flat, [self.params.batch_size, self.params.patch_size, self.params.patch_size, 1])
+    #bkjung
+    #self.pred_I2 = tf.reshape(pred_I2_flat, [self.params.batch_size, self.params.patch_size, self.params.patch_size, 1])
+    self.pred_I2 = tf.reshape(pred_I2_flat, [8, self.params.patch_size, self.params.patch_size, 1])
 
   def build_losses(self):
     I2 = self.I2_aug

@@ -16,11 +16,16 @@ import cv2
 # Size of synthetic image and the pertubation range (RH0)
 HEIGHT = 142 #
 WIDTH = 190
+# HEIGHT = 1280
+# WIDTH = 1280
 RHO = 24
 PATCH_SIZE = 128
+# PATCH_SIZE = 8
 # Full image size (used for displaying)
 FULL_HEIGHT = 240 #
 FULL_WIDTH =  320
+# FULL_HEIGHT = 1280 #
+# FULL_WIDTH =  1280
 
 # Data directories
 DATA_PATH = "/data/UnsupervisedDeepHomography_RealData/" + str(RHO) + '/'
@@ -452,6 +457,8 @@ class TestHomography(object):
       gt_batch      = data_loader.gt_batch
       patch_indices_batch = data_loader.patch_indices_batch
 
+      print("args.num_gpus: "+str(args.num_gpus))
+      args.num_gpus=1
       # Split on multiple GPU
       I1_splits = tf.split(I1_batch, args.num_gpus, 0)
       I2_splits = tf.split(I2_batch, args.num_gpus, 0)
@@ -488,6 +495,9 @@ class TestHomography(object):
             # This ground truth is used for evaluating the estimated homography on real image data.
             model = HomographyModel(model_params, I1_splits[i], I2_splits[i], I1_aug_splits[i], I2_aug_splits[i], I_splits[i], I_prime_splits[i],
                                     pts1_splits[i], gt_splits[i], patch_indices_splits[i], reuse_variables=reuse_variables, model_index=i)
+
+            # model = HomographyModel(model_params, I1_batch, I2_batch, I1_aug_batch, I2_aug_batch, I_batch, I_prime_batch, 
+            # pts1_batch, gt_batch, patch_indices_batch, reuse_variables=reuse_variables, model_index=i)
             # Debug test splits
             #test_synthetic_dataloader(data_loader, True, I1_splits[i], I2_splits[i], I_splits[i], I_prime_splits[i], pts1_splits[i], gt_splits[i], patch_indices_splits[i])
 
@@ -543,7 +553,9 @@ class TestHomography(object):
     # Saver
     log_name = args.loss_type
     summary_writer = tf.summary.FileWriter(args.log_dir, sess.graph)
+    print("------------train saver------------------")
     train_saver = tf.train.Saver(max_to_keep=20) # Keep maximum 20 models
+    #save all variables in graph
 
     # Initialize
     sess.run(tf.global_variables_initializer())
@@ -553,8 +565,7 @@ class TestHomography(object):
     threads = tf.train.start_queue_runners(sess=sess, coord=coordinator)
 
 
-    # Restore
-    print(args.save_model_dir)
+
     train_saver.restore(sess,tf.train.latest_checkpoint(args.save_model_dir))
     # Index of the image want to display
     index = 0
